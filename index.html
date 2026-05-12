@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>あおぬるの部屋</title>
+
     <style>
       * {
         box-sizing: border-box;
@@ -16,9 +17,26 @@
       body {
         margin: 0;
         min-height: 100vh;
-        background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 45%, #ecfdf5 100%);
+        overflow-x: hidden;
+
+        background:
+          linear-gradient(
+            180deg,
+            #f0f9ff 0%,
+            #ffffff 45%,
+            #ecfdf5 100%
+          );
+
         color: #334155;
-        font-family: "Yu Gothic", "Hiragino Sans", "Meiryo", sans-serif;
+
+        font-family:
+          "Yu Gothic",
+          "Hiragino Sans",
+          "Meiryo",
+          sans-serif;
+
+        line-height: 1.8;
+        letter-spacing: 0.02em;
       }
 
       body.is-opening {
@@ -35,25 +53,49 @@
 
       .page {
         min-height: 100vh;
+
+        opacity: 0;
+        transform: translateY(8px);
+
+        transition:
+          opacity 0.8s ease,
+          transform 0.8s ease;
+      }
+
+      .page.is-visible {
+        opacity: 1;
+        transform: translateY(0);
       }
 
       .container {
         max-width: 1024px;
         margin: 0 auto;
+
         padding-left: 16px;
         padding-right: 16px;
       }
 
+      /* =======================
+         Opening
+      ======================= */
+
       .opening-overlay {
         position: fixed;
         inset: 0;
+
         z-index: 9999;
+
         display: flex;
         align-items: center;
         justify-content: center;
+
         overflow: hidden;
+
         background: #ffffff;
-        transition: opacity 0.5s ease, visibility 0.5s ease;
+
+        transition:
+          opacity 0.5s ease,
+          visibility 0.5s ease;
       }
 
       .opening-overlay.is-hidden {
@@ -61,60 +103,120 @@
         visibility: hidden;
       }
 
-      .opening-band {
+      .opening-knot {
         position: absolute;
-        width: 150vw;
-        height: 32px;
-        border-radius: 999px;
-        background: rgba(125, 211, 252, 0.8);
-        animation: bandMove 2.2s ease-in-out forwards;
+
+        width: min(70vw, 520px);
+
+        aspect-ratio: 1;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .knot-svg {
+        width: 100%;
+        height: 100%;
+
+        overflow: visible;
+      }
+
+      .knot-path {
+        fill: none;
+
+        stroke: rgba(125, 211, 252, 0.95);
+
+        stroke-width: 10;
+
+        stroke-linecap: round;
+        stroke-linejoin: round;
+
+        stroke-dasharray: 1400;
+        stroke-dashoffset: 1400;
+
+        filter:
+          drop-shadow(
+            0 0 10px rgba(125, 211, 252, 0.25)
+          );
+
+        animation:
+          knotDraw 2.2s cubic-bezier(0.65, 0, 0.35, 1)
+            forwards,
+          knotRotate 2.8s ease-in-out forwards;
       }
 
       .opening-quote {
         position: absolute;
+
         color: #94a3b8;
+
         font-size: 12px;
+
         letter-spacing: 0.35em;
+
         opacity: 0;
-        animation: quoteFade 1.2s ease 1.6s forwards;
+
+        animation:
+          quoteFade 1.2s ease 1.6s forwards;
       }
 
       .opening-spark {
         position: absolute;
+
         left: 50%;
         top: 50%;
+
         border-radius: 999px;
+
         opacity: 0;
       }
 
       .opening-spark.s1 {
         width: 8px;
         height: 8px;
+
         background: #bae6fd;
-        animation: spark1 0.9s ease 1.55s forwards;
+
+        animation:
+          spark1 0.9s ease 1.55s forwards;
       }
 
       .opening-spark.s2 {
         width: 6px;
         height: 6px;
+
         background: #ffffff;
-        animation: spark2 1s ease 1.58s forwards;
+
+        animation:
+          spark2 1s ease 1.58s forwards;
       }
 
       .opening-spark.s3 {
         width: 8px;
         height: 8px;
+
         background: #e0f2fe;
-        animation: spark3 1s ease 1.62s forwards;
+
+        animation:
+          spark3 1s ease 1.62s forwards;
       }
 
       .opening-whiteout {
         position: absolute;
         inset: 0;
+
         background: #ffffff;
+
         opacity: 0;
-        animation: whiteOut 0.7s ease 2.7s forwards;
+
+        animation:
+          whiteOut 0.7s ease 2.7s forwards;
       }
+
+      /* =======================
+         Header
+      ======================= */
 
       .site-header {
         padding-top: 24px;
@@ -122,39 +224,70 @@
 
       .site-title {
         margin: 0;
+
         padding: 16px 0;
+
         border-top: 1px solid #94a3b8;
         border-bottom: 1px solid #94a3b8;
+
         font-size: clamp(30px, 5vw, 48px);
+
         font-weight: 700;
       }
 
       .site-nav {
         margin-top: 16px;
+
         display: flex;
         flex-wrap: wrap;
+
         justify-content: center;
         align-items: center;
+
         gap: 4px;
+
         font-size: 18px;
       }
 
       .nav-button {
         border: 0;
+
         background: transparent;
+
         color: inherit;
+
         padding: 8px 12px;
+
+        border-radius: 999px;
+
         cursor: pointer;
-        transition: transform 0.2s ease;
+
+        transition:
+          background 0.2s ease,
+          color 0.2s ease,
+          transform 0.2s ease;
       }
 
       .nav-button:hover {
+        background:
+          rgba(186, 230, 253, 0.35);
+
         transform: translateY(-2px);
+      }
+
+      .nav-button.is-active {
+        color: #0ea5e9;
+
+        font-weight: 700;
       }
 
       .nav-separator {
         color: #64748b;
       }
+
+      /* =======================
+         Main
+      ======================= */
 
       .site-main {
         padding-top: 24px;
@@ -163,8 +296,35 @@
 
       .section-card {
         background: #ffffff;
+
         border-top: 1px solid #cbd5e1;
+
+        border-radius: 12px;
+
         padding: 20px;
+
+        box-shadow:
+          0 2px 14px rgba(148, 163, 184, 0.06);
+
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease,
+          box-shadow 0.25s ease;
+
+        opacity: 0;
+
+        transform: translateY(24px);
+      }
+
+      .section-card.is-show {
+        opacity: 1;
+
+        transform: translateY(0);
+      }
+
+      .section-card:hover {
+        box-shadow:
+          0 8px 24px rgba(148, 163, 184, 0.1);
       }
 
       .section-card + .section-card {
@@ -173,7 +333,9 @@
 
       .section-card h2 {
         margin: 0;
+
         font-size: clamp(28px, 4vw, 36px);
+
         font-weight: 600;
       }
 
@@ -183,38 +345,53 @@
 
       .section-body {
         margin-top: 16px;
+
         display: grid;
+
         gap: 8px;
-        line-height: 1.7;
       }
 
       .section-card {
         scroll-margin-top: 24px;
       }
 
+      /* =======================
+         Blog
+      ======================= */
+
       .blog-post {
         border-bottom: 1px solid #cbd5e1;
+
         padding-bottom: 16px;
       }
 
       .blog-trigger {
         width: 100%;
+
         border: 0;
+
         background: transparent;
+
         color: inherit;
+
         padding: 0;
+
         text-align: left;
+
         cursor: pointer;
       }
 
       .blog-date {
         color: #64748b;
+
         font-size: 14px;
       }
 
       .blog-title {
         margin: 4px 0 0;
+
         font-size: 24px;
+
         font-weight: 400;
       }
 
@@ -223,52 +400,96 @@
       }
 
       .post-detail {
-        max-height: 0;
-        margin-top: 0;
+        display: grid;
+
+        grid-template-rows: 0fr;
+
         overflow: hidden;
-        transition: max-height 0.5s ease, margin-top 0.5s ease;
+
+        transition:
+          grid-template-rows 0.45s ease;
       }
 
       .blog-post.is-open .post-detail {
-        max-height: 160px;
+        grid-template-rows: 1fr;
+
         margin-top: 12px;
       }
 
       .post-detail-inner {
+        overflow: hidden;
+
         border: 1px solid #cbd5e1;
+
         background: #f8fafc;
+
         padding: 12px;
       }
 
+      /* =======================
+         Footer
+      ======================= */
+
       .site-footer {
         padding: 40px 0;
+
         text-align: center;
+
         color: #64748b;
+
         font-size: 14px;
       }
 
-      @keyframes bandMove {
+      /* =======================
+         Animation
+      ======================= */
+
+      @keyframes knotDraw {
         0% {
-          transform: translate(-170vw, -20vh) rotate(-22deg);
+          stroke-dashoffset: 1400;
+          opacity: 0;
         }
-        45% {
-          transform: translate(-8vw, 0) rotate(-22deg);
+
+        15% {
+          opacity: 1;
         }
-        65% {
-          transform: translate(-8vw, 0) rotate(338deg);
-        }
+
         100% {
-          transform: translate(170vw, -10vh) rotate(390deg);
+          stroke-dashoffset: 0;
+          opacity: 1;
+        }
+      }
+
+      @keyframes knotRotate {
+        0% {
+          transform:
+            rotate(-18deg)
+            scale(0.92);
+        }
+
+        55% {
+          transform:
+            rotate(8deg)
+            scale(1);
+        }
+
+        100% {
+          transform:
+            rotate(24deg)
+            scale(1.02);
         }
       }
 
       @keyframes quoteFade {
         0% {
           opacity: 0;
+
           filter: blur(6px);
         }
+
         100% {
           opacity: 0.7;
+
           filter: blur(0);
         }
       }
@@ -277,6 +498,7 @@
         0% {
           opacity: 0;
         }
+
         100% {
           opacity: 1;
         }
@@ -285,44 +507,72 @@
       @keyframes spark1 {
         0% {
           opacity: 0;
-          transform: translate(0, 0) scale(0.2);
+
+          transform:
+            translate(0, 0)
+            scale(0.2);
         }
+
         20% {
           opacity: 1;
         }
+
         100% {
           opacity: 0;
-          transform: translate(-80px, -45px) scale(1.8);
+
+          transform:
+            translate(-80px, -45px)
+            scale(1.8);
         }
       }
 
       @keyframes spark2 {
         0% {
           opacity: 0;
-          transform: translate(0, 0) scale(0.2);
+
+          transform:
+            translate(0, 0)
+            scale(0.2);
         }
+
         20% {
           opacity: 1;
         }
+
         100% {
           opacity: 0;
-          transform: translate(70px, -20px) scale(1.5);
+
+          transform:
+            translate(70px, -20px)
+            scale(1.5);
         }
       }
 
       @keyframes spark3 {
         0% {
           opacity: 0;
-          transform: translate(0, 0) scale(0.2);
+
+          transform:
+            translate(0, 0)
+            scale(0.2);
         }
+
         20% {
           opacity: 1;
         }
+
         100% {
           opacity: 0;
-          transform: translate(20px, 55px) scale(1.6);
+
+          transform:
+            translate(20px, 55px)
+            scale(1.6);
         }
       }
+
+      /* =======================
+         Responsive
+      ======================= */
 
       @media (min-width: 768px) {
         .container {
@@ -360,6 +610,7 @@
         }
       }
     </style>
+
     <noscript>
       <style>
         body {
@@ -369,134 +620,490 @@
         #openingOverlay {
           display: none !important;
         }
+
+        .page {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+
+        .section-card {
+          opacity: 1 !important;
+          transform: none !important;
+        }
       </style>
     </noscript>
   </head>
+
   <body class="is-opening">
-    <div class="opening-overlay" id="openingOverlay" aria-hidden="true">
-      <div class="opening-band"></div>
-      <div class="opening-quote">Coloring the void from null.</div>
+    <!-- Opening -->
+
+    <div
+      class="opening-overlay"
+      id="openingOverlay"
+      aria-hidden="true"
+    >
+      <div class="opening-knot">
+        <svg
+          viewBox="0 0 600 600"
+          class="knot-svg"
+        >
+          <path
+            class="knot-path"
+            d="
+              M300 120
+              C430 120 470 240 380 300
+              C250 390 170 260 250 210
+              C360 140 470 350 300 430
+              C160 500 90 320 170 220
+            "
+          />
+        </svg>
+      </div>
+
+      <div class="opening-quote">
+        Rendering memories from null.
+      </div>
+
       <div class="opening-spark s1"></div>
       <div class="opening-spark s2"></div>
       <div class="opening-spark s3"></div>
+
       <div class="opening-whiteout"></div>
     </div>
 
+    <!-- Page -->
+
     <div class="page">
       <header class="container site-header">
-        <h1 class="site-title">あおぬるの部屋</h1>
-        <nav class="site-nav" aria-label="サイト内ナビゲーション">
-          <button class="nav-button" type="button" data-target="sec0">自己紹介</button>
+        <h1 class="site-title">
+          あおぬるの部屋
+        </h1>
+
+        <nav
+          class="site-nav"
+          aria-label="サイト内ナビゲーション"
+        >
+          <button
+            class="nav-button"
+            type="button"
+            data-target="sec0"
+          >
+            自己紹介
+          </button>
+
           <span class="nav-separator">｜</span>
-          <button class="nav-button" type="button" data-target="sec1">サイト制作</button>
+
+          <button
+            class="nav-button"
+            type="button"
+            data-target="sec1"
+          >
+            サイト制作
+          </button>
+
           <span class="nav-separator">｜</span>
-          <button class="nav-button" type="button" data-target="sec2">ブログ</button>
+
+          <button
+            class="nav-button"
+            type="button"
+            data-target="sec2"
+          >
+            ブログ
+          </button>
         </nav>
       </header>
 
       <main class="container site-main">
-        <section id="sec0" class="section-card">
+        <!-- 自己紹介 -->
+
+        <section
+          id="sec0"
+          class="section-card"
+        >
           <h2>自己紹介</h2>
+
           <div class="section-body">
             <p>名前 : あおぬる</p>
+
             <p>
               X :
-              <a href="https://x.com/aonull012" target="_blank" rel="noopener noreferrer">https://x.com/Aonull_000</a>
+              <a
+                href="https://x.com/Aonull_000"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                https://x.com/Aonull_000
+              </a>
             </p>
+
             <p>
               YouTube :
-              <a href="https://www.youtube.com/@Aonull000" target="_blank" rel="noopener noreferrer">https://www.youtube.com/@Aonull000</a>
+              <a
+                href="https://www.youtube.com/@Aonull000"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                https://www.youtube.com/@Aonull000
+              </a>
             </p>
-            <p>Discord : aonull_000</p>
-            <p>年齢 : 14 ('11/10/04生)</p>
+
+            <p>
+              Discord : aonull_000
+            </p>
+
+            <p>
+              年齢 : 14 ('11/10/04生)
+            </p>
+
             <p>性別 : 男</p>
-            <p>出身地 : 関東近郊</p>
-            <p>推し : Hololive 6th [HoloX] 風真いろは さん</p>
-            <p style="font-weight: 600; margin-top: 16px;">≪コメント≫</p>
-            <p>はじめまして（？）あおぬると申します！かざま隊でありながら、絶賛受験生です。</p>
-            <p style="font-weight: 600; margin-top: 16px;">≪太鼓の経歴≫</p>
-            <p>2024：一級 金枠金合格</p>
-            <p>2025：二段 銀枠銀合格</p>
-            <p>2026：（三段行ってみたいな）</p>
+
+            <p>
+              出身地 : 関東近郊
+            </p>
+
+            <div>
+              <p>推し：</p>
+
+              <p>
+                Hololive [6th-Gen/HoloX]
+                風真いろは さん
+              </p>
+
+              <p>
+                Hololive [1st-Gen]
+                夏色まつり さん
+              </p>
+            </div>
+
+            <p
+              style="
+                font-weight: 600;
+                margin-top: 16px;
+              "
+            >
+              ≪コメント≫
+            </p>
+
+            <p>
+              はじめまして（？）
+              あおぬると申します！
+
+              かざま隊でありながら、
+              絶賛受験生です。
+            </p>
+
+            <p
+              style="
+                font-weight: 600;
+                margin-top: 16px;
+              "
+            >
+              ≪太鼓の経歴≫
+            </p>
+
+            <p>
+              2024：一級 金枠金合格
+            </p>
+
+            <p>
+              2025：二段 銀枠銀合格
+            </p>
+
+            <p>
+              2026：（三段行ってみたいな）
+            </p>
           </div>
         </section>
 
-        <section id="sec1" class="section-card">
+        <!-- サイト制作 -->
+
+        <section
+          id="sec1"
+          class="section-card"
+        >
           <h2>サイト制作</h2>
+
           <div class="section-body">
-            <p>まだ作り途中なんですよねぇ；；</p>
+            <p>
+              まだ作り途中なんですよねぇ；；
+            </p>
           </div>
         </section>
 
-        <section id="sec2" class="section-card">
+        <!-- ブログ -->
+
+        <section
+          id="sec2"
+          class="section-card"
+        >
           <h2>ブログ</h2>
+
           <div class="section-body">
-            <article class="blog-post" id="blogPost">
-              <button class="blog-trigger" id="blogToggle" type="button" aria-expanded="false">
-                <p class="blog-date">2026.04.25</p>
-                <h3 class="blog-title">初！個人サイト作ってみた</h3>
-                <p class="blog-text">個人サイト、なにそれおいしいの。</p>
+            <article
+              class="blog-post"
+              id="blogPost"
+            >
+              <button
+                class="blog-trigger"
+                id="blogToggle"
+                type="button"
+                aria-expanded="false"
+              >
+                <p class="blog-date">
+                  2026.04.25
+                </p>
+
+                <h3 class="blog-title">
+                  初！個人サイト作ってみた
+                </h3>
+
+                <p class="blog-text">
+                  個人サイト、
+                  なにそれおいしいの。
+                </p>
               </button>
-              <div class="post-detail" id="postDetail">
-                <div class="post-detail-inner">詳細はこれから追加予定です。</div>
+
+              <div
+                class="post-detail"
+                id="postDetail"
+              >
+                <div
+                  class="post-detail-inner"
+                >
+                  詳細はこれから追加予定です。
+                </div>
               </div>
             </article>
           </div>
         </section>
       </main>
 
-      <footer class="site-footer">© 2026 あおぬるの部屋</footer>
+      <footer class="site-footer">
+        © 2026 あおぬるの部屋
+      </footer>
     </div>
 
     <script>
       (function () {
-        var openingOverlay = document.getElementById("openingOverlay");
-        var navButtons = document.querySelectorAll(".nav-button");
-        var blogPost = document.getElementById("blogPost");
-        var blogToggle = document.getElementById("blogToggle");
+        var openingOverlay =
+          document.getElementById(
+            "openingOverlay"
+          );
+
+        var navButtons =
+          document.querySelectorAll(
+            ".nav-button"
+          );
+
+        var blogPost =
+          document.getElementById(
+            "blogPost"
+          );
+
+        var blogToggle =
+          document.getElementById(
+            "blogToggle"
+          );
+
+        var page =
+          document.querySelector(".page");
+
+        var sections =
+          document.querySelectorAll(
+            "main section"
+          );
+
         var openingTimer;
+
+        /* =======================
+           Opening
+        ======================= */
 
         function closeOpening() {
           if (!openingOverlay) {
-            document.body.classList.remove("is-opening");
+            document.body.classList.remove(
+              "is-opening"
+            );
+
             return;
           }
 
-          openingOverlay.classList.add("is-hidden");
-          document.body.classList.remove("is-opening");
-        }
+          openingOverlay.classList.add(
+            "is-hidden"
+          );
 
-        function goToSection(id) {
-          var target = document.getElementById(id);
-          if (target) {
-            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          document.body.classList.remove(
+            "is-opening"
+          );
+
+          if (page) {
+            page.classList.add(
+              "is-visible"
+            );
           }
         }
 
-        function togglePost() {
-          var isOpen = blogPost.classList.toggle("is-open");
-          blogToggle.setAttribute("aria-expanded", String(isOpen));
+        openingTimer =
+          window.setTimeout(
+            closeOpening,
+            3400
+          );
+
+        /* =======================
+           Navigation
+        ======================= */
+
+        function goToSection(id) {
+          var target =
+            document.getElementById(id);
+
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
         }
 
-        navButtons.forEach(function (button) {
-          button.addEventListener("click", function () {
-            var id = button.getAttribute("data-target");
-            if (id) {
-              goToSection(id);
+        navButtons.forEach(function (
+          button
+        ) {
+          button.addEventListener(
+            "click",
+            function () {
+              var id =
+                button.getAttribute(
+                  "data-target"
+                );
+
+              if (id) {
+                goToSection(id);
+              }
+            }
+          );
+        });
+
+        /* =======================
+           Active Nav
+        ======================= */
+
+        function updateActiveNav() {
+          var scrollY =
+            window.scrollY;
+
+          sections.forEach(function (
+            section
+          ) {
+            var top =
+              section.offsetTop - 140;
+
+            var bottom =
+              top +
+              section.offsetHeight;
+
+            var id =
+              section.getAttribute("id");
+
+            if (
+              scrollY >= top &&
+              scrollY < bottom
+            ) {
+              navButtons.forEach(
+                function (button) {
+                  button.classList.toggle(
+                    "is-active",
+
+                    button.getAttribute(
+                      "data-target"
+                    ) === id
+                  );
+                }
+              );
             }
           });
-        });
-
-        if (blogToggle && blogPost) {
-          blogToggle.addEventListener("click", togglePost);
         }
 
-        openingTimer = window.setTimeout(closeOpening, 3400);
+        window.addEventListener(
+          "scroll",
+          updateActiveNav
+        );
 
-        window.addEventListener("beforeunload", function () {
-          clearTimeout(openingTimer);
-          document.body.classList.remove("is-opening");
+        updateActiveNav();
+
+        /* =======================
+           Blog
+        ======================= */
+
+        function togglePost() {
+          var isOpen =
+            blogPost.classList.toggle(
+              "is-open"
+            );
+
+          blogToggle.setAttribute(
+            "aria-expanded",
+            String(isOpen)
+          );
+        }
+
+        if (
+          blogToggle &&
+          blogPost
+        ) {
+          blogToggle.addEventListener(
+            "click",
+            togglePost
+          );
+        }
+
+        /* =======================
+           Scroll Animation
+        ======================= */
+
+        var observer =
+          new IntersectionObserver(
+            function (entries) {
+              entries.forEach(
+                function (entry) {
+                  if (
+                    entry.isIntersecting
+                  ) {
+                    entry.target.classList.add(
+                      "is-show"
+                    );
+                  }
+                }
+              );
+            },
+
+            {
+              threshold: 0.12,
+            }
+          );
+
+        sections.forEach(function (
+          section
+        ) {
+          observer.observe(section);
         });
+
+        /* =======================
+           Cleanup
+        ======================= */
+
+        window.addEventListener(
+          "beforeunload",
+
+          function () {
+            clearTimeout(
+              openingTimer
+            );
+
+            document.body.classList.remove(
+              "is-opening"
+            );
+          }
+        );
       })();
     </script>
   </body>
